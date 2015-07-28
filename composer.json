@@ -1,0 +1,24 @@
+{
+  "name": "apg/fleet",
+  "description": "Generates aircraft page based on contents of fleet folder.",
+  "authors": [
+    {
+      "name": "Matthew Butterworth",
+      "email": "mattb@flyafa.com"
+    }
+  ],
+  "require": {},
+  "require-dev": {
+    "phpmd/phpmd" : "@stable",
+    "sebastian/phpcpd": "*",
+    "phpspec/phpspec": "~2.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "": "src"
+    },
+    "psr-4": {
+      "APG\\Fleet\\": "src"
+    }
+  }
+}
