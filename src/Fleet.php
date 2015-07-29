@@ -1,4 +1,5 @@
 <?php namespace APG\Fleet;
+use APG\Fleet\Models\Aircraft;
 
 /**
  * Class Fleet
@@ -10,8 +11,9 @@ class Fleet
     protected $basePath;
 
     /**
-     * @param $path Path to fleet folder
-     * @throws \Exception Directory does not exist
+     * @param $airline
+     * @param $path
+     * @throws \Exception
      */
     public function __construct($airline, $path)
     {
@@ -23,5 +25,16 @@ class Fleet
         $this->basePath = $path;
     }
 
+    public function getAllAircraft()
+    {
+        $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->basePath));
+
+        foreach ($objects as $object) {
+            if ($object->getFileName === 'aircraft.json') {
+                $json = file_get_contents($object->getPathName);
+                
+            }
+        }
+    }
 
 }
