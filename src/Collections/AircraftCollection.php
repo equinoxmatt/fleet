@@ -33,7 +33,13 @@ class AircraftCollection implements \Countable, \IteratorAggregate
         $this->aircraftList[$key] = $value;
     }
 
-    public function isEmpty() {
+    public function push($value)
+    {
+        $this->aircraftList[] = $value;
+    }
+
+    public function isEmpty()
+    {
         return empty($this->aircraftList);
     }
 }
