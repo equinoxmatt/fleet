@@ -7,7 +7,9 @@
       "email": "mattb@flyafa.com"
     }
   ],
-  "require": {},
+  "require": {
+    "pimple/pimple": "~3.0"
+  },
   "require-dev": {
     "phpmd/phpmd" : "@stable",
     "sebastian/phpcpd": "*",
