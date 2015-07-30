@@ -1,5 +1,4 @@
 <?php namespace APG\Fleet;
-use APG\Fleet\Models\Aircraft;
 
 /**
  * Class Fleet
@@ -31,7 +30,6 @@ class Fleet
 
     public function getAllAircraft()
     {
-        $objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->basePath));
         $fileObjects = $this->ioc['RecursiveIterator'];
         $aircraftCollection = $this->ioc['AircraftCollection'];
 
