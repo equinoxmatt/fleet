@@ -42,4 +42,16 @@ class AircraftCollection implements \Countable, \IteratorAggregate
     {
         return empty($this->aircraftList);
     }
+
+    public function getByCategory($category)
+    {
+        $list = array();
+        foreach ($this->aircraftList as $aircraft) {
+            if(strpos($aircraft->path, 'cat' . $category) !== false) {
+                $list[] = $aircraft;
+            }
+        }
+
+        return $list;
+    }
 }

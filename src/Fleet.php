@@ -1,4 +1,5 @@
 <?php namespace APG\Fleet;
+use APG\Fleet\Collections\AircraftCollection;
 
 /**
  * Class Fleet
@@ -38,17 +39,43 @@ class Fleet
         $aircraftCollection = $this->ioc['AircraftCollection'];
 
         foreach ($fileObjects as $file) {
-            if ($file->getFileName() === 'aircraft.json') {
+            if ($file->getFilename() === 'aircraft.json') {
                 $json = file_get_contents($file->getPathName());
                 if ($json) {
                     $aircraftConfig = json_decode($json);
+                    $aircraftConfig->path = $file->getPath();
                     $aircraftCollection->push($aircraftConfig);
                 }
             }
         }
-        $this->writeCache($aircraftCollection->all());
+        //$this->writeCache($aircraftCollection);
 
-        return $aircraftCollection->all();
+        return $aircraftCollection;
+    }
+
+    public function downloadAircraft($filename)
+    {
+        $aircraftCollection = $this->getAllAircraft();
+        foreach ($aircraftCollection as $aircraft) {
+            foreach ($aircraft->files as $file) {
+                if ($file[0]->file_name === $filename) {
+					if (file_exists($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename)) {
+
+						header('Content-Description: File Transfer');
+						header('Content-Type: application/octet-stream');
+						header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+						header('Expires: 0');
+						header('Cache-Control: must-revalidate');
+						header('Pragma: public');
+						header("Content-length: " . filesize($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename));
+						readfile($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename);
+						exit;						
+					}
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -68,10 +95,9 @@ class Fleet
     }
 
     /**
-     * @param AircraftCollection $aircraftCollection
-     * @return void
+     * @param array $aircraftCollection
      */
-    protected function writeCache(array $aircraftCollection)
+    protected function writeCache(AircraftCollection $aircraftCollection)
     {
         file_put_contents($this->cacheLocation, serialize($aircraftCollection));
     }
