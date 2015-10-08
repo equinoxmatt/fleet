@@ -1,0 +1,11 @@
+{
+    "aircraft_title": "Beechcraft 1900D Canada",
+    "image": "thumbnail.jpg",
+    "files": {
+              "fsx": [
+            {
+                "file_name": "1900D_eh.zip"
+            }
+        ]
+    }
+}

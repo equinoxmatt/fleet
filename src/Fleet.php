@@ -1,5 +1,6 @@
 <?php namespace APG\Fleet;
 use APG\Fleet\Collections\AircraftCollection;
+use Pimple\Container;
 
 /**
  * Class Fleet
@@ -17,7 +18,7 @@ class Fleet
      * @param \Pimple\Container $ioc
      * @throws \Exception
      */
-    public function __construct($airline, $path, \Pimple\Container $ioc)
+    public function __construct($airline, $path, Container $ioc)
     {
         if (!is_dir($path)) {
             throw new \Exception('Directory does not exist.');
@@ -30,6 +31,7 @@ class Fleet
 
     public function getAllAircraft()
     {
+        // TODO:  Implement writing to cache
         if ($this->isCached()) {
             $aircraftCollection = $this->readCache();
             return $aircraftCollection;
@@ -48,7 +50,6 @@ class Fleet
                 }
             }
         }
-        //$this->writeCache($aircraftCollection);
 
         return $aircraftCollection;
     }
@@ -95,7 +96,7 @@ class Fleet
     }
 
     /**
-     * @param array $aircraftCollection
+     * @param AircraftCollection $aircraftCollection
      */
     protected function writeCache(AircraftCollection $aircraftCollection)
     {
