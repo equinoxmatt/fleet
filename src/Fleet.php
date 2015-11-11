@@ -1,6 +1,6 @@
 <?php namespace APG\Fleet;
+
 use APG\Fleet\Collections\AircraftCollection;
-use Pimple\Container;
 
 /**
  * Class Fleet
@@ -10,25 +10,31 @@ class Fleet
 {
     protected $airline;
     protected $basePath;
+    protected $aircraftCollection;
+    protected $recursiveIterator;
     protected $cacheLocation = 'cache/aircraft.cache';
 
     /**
      * @param $airline
+     * @param AircraftCollection $aircraftCollection
      * @param $path
-     * @param \Pimple\Container $ioc
      * @throws \Exception
      */
-    public function __construct($airline, $path, Container $ioc)
+    public function __construct($airline, AircraftCollection $aircraftCollection, $path)
     {
         if (!is_dir($path)) {
             throw new \Exception('Directory does not exist.');
         }
 
         $this->airline = $airline;
-        $this->ioc = $ioc;
-        $this->ioc['basePath'] = $path;
+        $this->basePath = $path;
+        $this->aircraftCollection = $aircraftCollection;
+        $this->recursiveIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
     }
 
+    /**
+     * @return AircraftCollection
+     */
     public function getAllAircraft()
     {
         // TODO:  Implement writing to cache
@@ -37,8 +43,8 @@ class Fleet
             return $aircraftCollection;
         }
 
-        $fileObjects = $this->ioc['RecursiveIterator'];
-        $aircraftCollection = $this->ioc['AircraftCollection'];
+        $fileObjects = $this->recursiveIterator;
+        $aircraftCollection = $this->aircraftCollection;
 
         foreach ($fileObjects as $file) {
             if ($file->getFilename() === 'aircraft.json') {
@@ -54,6 +60,10 @@ class Fleet
         return $aircraftCollection;
     }
 
+    /**
+     * @param $filename
+     * @return bool
+     */
     public function downloadAircraft($filename)
     {
         $aircraftCollection = $this->getAllAircraft();
