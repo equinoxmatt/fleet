@@ -3,19 +3,12 @@
 class AircraftColletionTest extends PHPUnit_Framework_TestCase
 {
     protected $aircraftCollection;
-    protected $ioc;
+    protected $fleet;
 
     public function setUp()
     {
         $this->aircraftCollection = new \APG\Fleet\Collections\AircraftCollection();
-
-        $this->ioc = new \Pimple\Container();
-        $this->ioc['AircraftCollection'] = $this->ioc->factory(function () {
-            return new \APG\Fleet\Collections\AircraftCollection();
-        });
-        $this->ioc['RecursiveIterator'] = $this->ioc->factory(function ($c) {
-            return new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($c['basePath']));
-        });
+        $this->fleet = new \APG\Fleet\Fleet('AFA', $this->aircraftCollection, 'tests\test_files');
     }
     public function testListStartsEmpty()
     {
@@ -46,10 +39,9 @@ class AircraftColletionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3, count($this->aircraftCollection->all()));
     }
 
-    public function testGetByCategory(){
-
-        $fleet = new \APG\Fleet\Fleet('AFA', 'tests\test_files', $this->ioc);
-        $aircraftCollection = $fleet->getAllAircraft();
+    public function testGetByCategory()
+    {
+        $aircraftCollection = $this->fleet->getAllAircraft();
         $aircraftList = $aircraftCollection->getByCategory(1);
         $this->assertInternalType('array', $aircraftList);
         $this->assertNotEmpty($aircraftList);
