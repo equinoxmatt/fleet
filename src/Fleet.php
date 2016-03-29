@@ -57,6 +57,7 @@ class Fleet
             }
         }
 
+        $this->writeCache($aircraftCollection);
         return $aircraftCollection;
     }
 
