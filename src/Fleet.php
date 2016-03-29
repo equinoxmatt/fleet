@@ -37,7 +37,6 @@ class Fleet
      */
     public function getAllAircraft()
     {
-        // TODO:  Implement writing to cache
         if ($this->isCached()) {
             $aircraftCollection = $this->readCache();
             return $aircraftCollection;
