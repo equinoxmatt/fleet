@@ -1,6 +1,7 @@
 <?php namespace APG\Fleet;
 
 use APG\Fleet\Collections\AircraftCollection;
+use Stash\Pool;
 
 /**
  * Class Fleet
@@ -12,19 +13,23 @@ class Fleet
     protected $basePath;
     protected $aircraftCollection;
     protected $recursiveIterator;
-    protected $cacheLocation = 'cache/aircraft.cache';
+    protected $cacheEnabled = false;
+    /** @var Pool  */
+    protected $cachePool;
 
     /**
      * @param $airline
      * @param AircraftCollection $aircraftCollection
      * @param $path
-     * @throws \Exception
+     * @param Pool $cachePool
      */
-    public function __construct($airline, AircraftCollection $aircraftCollection, $path)
+    public function __construct($airline, AircraftCollection $aircraftCollection, $path, Pool $cachePool)
     {
         if (!is_dir($path)) {
-            throw new \Exception('Directory does not exist.');
+            throw new \InvalidArgumentException('Directory does not exist.');
         }
+
+        $this->cachePool = $cachePool;
 
         $this->airline = $airline;
         $this->basePath = $path;
@@ -37,9 +42,12 @@ class Fleet
      */
     public function getAllAircraft()
     {
-        if ($this->isCached()) {
-            $aircraftCollection = $this->readCache();
-            return $aircraftCollection;
+        if ($this->cacheEnabled) {
+            $cacheItem = $this->cachePool->getItem('aircraftCollection');
+            $aircraftCollection = $cacheItem->get();
+            if ($cacheItem->isHit()) {
+                return $aircraftCollection;
+            }
         }
 
         $fileObjects = $this->recursiveIterator;
@@ -56,7 +64,10 @@ class Fleet
             }
         }
 
-        $this->writeCache($aircraftCollection);
+        if ($this->cacheEnabled) {
+            $this->cachePool->save($cacheItem->set($aircraftCollection));
+        }
+
         return $aircraftCollection;
     }
 
@@ -70,18 +81,17 @@ class Fleet
         foreach ($aircraftCollection as $aircraft) {
             foreach ($aircraft->files as $file) {
                 if ($file[0]->file_name === $filename) {
-					if (file_exists($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename)) {
-
-						header('Content-Description: File Transfer');
-						header('Content-Type: application/octet-stream');
-						header('Content-Disposition: attachment; filename="'.basename($filename).'"');
-						header('Expires: 0');
-						header('Cache-Control: must-revalidate');
-						header('Pragma: public');
-						header("Content-length: " . filesize($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename));
-						readfile($aircraft->path . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $filename);
-						exit;						
-					}
+                    if (file_exists($aircraft->path . '/files/' . $filename)) {
+                        header('Content-Description: File Transfer');
+                        header('Content-Type: application/octet-stream');
+                        header('Content-Disposition: attachment; filename="'.basename($filename).'"');
+                        header('Expires: 0');
+                        header('Cache-Control: must-revalidate');
+                        header('Pragma: public');
+                        header("Content-length: " . filesize($aircraft->path . '/files/' . $filename));
+                        readfile($aircraft->path . '/files/' . $filename);
+                        exit;
+                    }
                 }
             }
         }
@@ -90,27 +100,15 @@ class Fleet
     }
 
     /**
-     * @return bool
+     * @param bool $cacheStatus
      */
-    protected function isCached()
+    public function setCacheEnabled($cacheStatus)
     {
-        return file_exists($this->cacheLocation);
+        $this->cacheEnabled = $cacheStatus;
     }
 
-    /**
-     * @return mixed
-     */
-    protected function readCache()
+    public function clearCache()
     {
-        return unserialize(file_get_contents($this->cacheLocation));
+        $this->cachePool->clear();
     }
-
-    /**
-     * @param AircraftCollection $aircraftCollection
-     */
-    protected function writeCache(AircraftCollection $aircraftCollection)
-    {
-        file_put_contents($this->cacheLocation, serialize($aircraftCollection));
-    }
-
 }

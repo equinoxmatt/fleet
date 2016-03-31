@@ -7,8 +7,14 @@ class AircraftColletionTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        $this->fleet = new \APG\Fleet\Fleet(
+            'AFA',
+            new \APG\Fleet\Collections\AircraftCollection(),
+            'tests\test_files',
+            new \Stash\Pool(new \Stash\Driver\FileSystem(['path' => 'tmp/']))
+        );
+
         $this->aircraftCollection = new \APG\Fleet\Collections\AircraftCollection();
-        $this->fleet = new \APG\Fleet\Fleet('AFA', $this->aircraftCollection, 'tests\test_files');
     }
     public function testListStartsEmpty()
     {
@@ -45,6 +51,5 @@ class AircraftColletionTest extends PHPUnit_Framework_TestCase
         $aircraftList = $aircraftCollection->getByCategory(1);
         $this->assertInternalType('array', $aircraftList);
         $this->assertNotEmpty($aircraftList);
-
     }
 }
