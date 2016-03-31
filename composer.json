@@ -8,7 +8,8 @@
     }
   ],
   "require": {
-    "rdlowrey/auryn": "~1.1"
+    "rdlowrey/auryn": "~1.1",
+    "tedivm/stash": "^0.14.1"
   },
   "require-dev": {
     "phpmd/phpmd" : "@stable",
