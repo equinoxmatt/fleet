@@ -10,5 +10,7 @@ php:
   # aliased to a recent hhvm version
   - hhvm
 
+script: phpunit tests
+
 env:
   - DB=mysql
