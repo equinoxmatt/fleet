@@ -7,13 +7,19 @@ class FleetTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->fleet = new \APG\Fleet\Fleet(
-            'AFA',
-            new \APG\Fleet\Collections\AircraftCollection(),
-            'tests\test_files',
-            new \Stash\Pool(new \Stash\Driver\FileSystem())
-        );
+        $cacheFactory = function () {
+            $cacheDriver = new \Stash\Driver\FileSystem();
+            return new \Stash\Pool($cacheDriver);
+        };
 
+        $injector = new Auryn\Injector;
+        $injector->delegate('Pool', $cacheFactory);
+        $injector->define('APG\Fleet\Fleet', [
+            ':airline' => 'AFA',
+            ':path' => 'tests/test_files'
+        ]);
+
+        $this->fleet = $injector->make('APG\Fleet\Fleet');
         $this->fleet->clearCache();
     }
 
@@ -34,7 +40,14 @@ class FleetTest extends PHPUnit_Framework_TestCase
     public function testInvalidDirectory()
     {
         $this->setExpectedException('InvalidArgumentException');
-        new \APG\Fleet\Fleet('AFA', new \APG\Fleet\Collections\AircraftCollection(), 'thisdirectorydoesnotexist', new \Stash\Pool(new \Stash\Driver\FileSystem()));
+        new \APG\Fleet\Fleet(
+            'AFA',
+            new \APG\Fleet\Collections\AircraftCollection(),
+            'thisdirectorydoesnotexist',
+            new \Stash\Pool(
+                new \Stash\Driver\FileSystem()
+            )
+        );
     }
 
 }
