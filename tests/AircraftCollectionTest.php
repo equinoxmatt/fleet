@@ -9,7 +9,7 @@ class AircraftColletionTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $cacheFactory = function () {
+/*        $cacheFactory = function () {
             $cacheDriver = new \Stash\Driver\FileSystem();
             return new \Stash\Pool($cacheDriver);
         };
@@ -19,10 +19,11 @@ class AircraftColletionTest extends PHPUnit_Framework_TestCase
         $injector->define('APG\Fleet\Fleet', [
             ':airline' => 'AFA',
             ':path' => 'tests/test_files'
-        ]);
+        ]);*/
 
-        $this->fleet = $injector->make('APG\Fleet\Fleet');
+
         $this->aircraftCollection = new \APG\Fleet\Collections\AircraftCollection();
+        $this->fleet = new \APG\Fleet\Fleet('AFA', $this->aircraftCollection, 'tests/test_files', new \Stash\Pool(new \Stash\Driver\FileSystem()));
     }
     public function testListStartsEmpty()
     {
