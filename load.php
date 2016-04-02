@@ -7,10 +7,10 @@ $cacheFactory = function() {
 };
 
 $injector = new Auryn\Injector;
+$injector->delegate('Pool', $cacheFactory);
 $injector->define('APG\Fleet\Fleet', [
     ':airline' => 'AFA',
     ':path' => 'downloads/fleet/standard/'
 ]);
-$injector->delegate('Pool', $cacheFactory);
 
 $fleet = $injector->make('APG\Fleet\Fleet');
