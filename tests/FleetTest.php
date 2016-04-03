@@ -31,7 +31,7 @@ class FleetTest extends PHPUnit_Framework_TestCase
 
     public function testCanGetAllAircraftWithCache()
     {
-        $this->fleet->setCacheEnabled(true);
+        $this->fleet->setCacheEabled(true);
         $this->fleet->getAllAircraft();
         $cacheResult = $this->fleet->getAllAircraft();
         $this->assertInstanceOf('APG\Fleet\Collections\AircraftCollection', $cacheResult);
